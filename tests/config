@@ -1,0 +1,5 @@
+REUSE_DB=true
+
+DATABASE_USER=fast_back_user
+DATABASE_PASSWORD=fast_back_password
+DATABASE_TABLE=test_fast_back
