@@ -2,12 +2,13 @@ from django.db import models
 
 
 class User(models.Model):
-    class Meta:
-        db_table = "user"
-        verbose_name = "Кастомный пользователь"
+    name = models.CharField(max_length=64, blank=True, null=True)
+    password = models.CharField(max_length=64, blank=True, null=True)
 
-    name = models.CharField(max_length=64)
-    password = models.CharField(max_length=64)
+    class Meta:
+        managed = False
+        db_table = "user"
+        verbose_name = "App user"
 
     def __str__(self) -> str:
-        return f"Пользователь {self.name}"
+        return f"User {self.name}"

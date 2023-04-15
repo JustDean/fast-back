@@ -1,6 +1,10 @@
-from sqlmodel import SQLModel, Field
+from sqlalchemy import Column, String, ForeignKey
+
+from web.postgres import Base
 
 
-class Session(SQLModel, table=True):
-    id: str = Field(primary_key=True)
-    user: int = Field(foreign_key="user.id")
+class Session(Base):
+    __tablename__ = "session"
+
+    id = Column(String(64), primary_key=True)
+    user = Column(ForeignKey("user.id"))

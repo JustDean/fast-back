@@ -10,7 +10,7 @@ from app.user.forms import (
 )
 from app.user.models import User
 from app.session.accessors import session_accessor
-from web.db import get_session
+from web.postgres import get_session
 
 
 router = APIRouter(
@@ -35,7 +35,7 @@ async def signup(
     user_session = await session_accessor.create(db_session, new_user)
     response.set_cookie("sessionid", user_session.id)
 
-    return new_user
+    return new_user.to_dict()
 
 
 @router.post("/login", response_model=UserResponseForm)

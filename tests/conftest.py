@@ -1,15 +1,14 @@
-from distutils.util import strtobool
 import os
-from typing import AsyncGenerator
 import pytest
 import pytest_asyncio
-from sqlmodel import SQLModel
+from distutils.util import strtobool
+from typing import AsyncGenerator
 from starlette.testclient import TestClient
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import sessionmaker
 
 from web.settings import app
-from web.db import engine
+from web.postgres import engine, Base
 
 from .fixtures import *  # noqa
 
@@ -27,9 +26,21 @@ async def db() -> None:
     reuse = strtobool(os.getenv("REUSE_DB", "true"))
     if not reuse:
         async with engine.begin() as conn:
-            await conn.run_sync(SQLModel.metadata.drop_all)
-            await conn.run_sync(SQLModel.metadata.create_all)
-    return None
+            await conn.run_sync(Base.metadata.drop_all)
+            await conn.run_sync(Base.metadata.create_all)
+    yield
+
+
+@pytest_asyncio.fixture(autouse=True, scope="function")
+async def clear_db() -> None:
+    yield
+    async_session = sessionmaker(
+        engine, class_=AsyncSession, expire_on_commit=False
+    )
+    async with async_session() as session:
+        for table in reversed(Base.metadata.sorted_tables):
+            await session.execute(table.delete())
+        await session.commit()
 
 
 @pytest_asyncio.fixture
@@ -39,6 +50,3 @@ async def session() -> AsyncGenerator:
     )
     async with async_session() as session:
         yield session
-        for table in reversed(SQLModel.metadata.sorted_tables):
-            await session.execute(table.delete())
-        await session.commit()

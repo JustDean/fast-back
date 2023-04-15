@@ -5,7 +5,7 @@ import typer
 import alembic.config
 from os import environ, system
 
-# is required for uvicorn to run this app
+# it is required for uvicorn to run this app
 from web.settings import app  # noqa
 
 

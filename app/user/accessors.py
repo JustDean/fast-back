@@ -22,6 +22,7 @@ class UserAccessor:
             new_user = User(**data.dict())
             session.add(new_user)
             await session.commit()
+
             await session.refresh(new_user)
             return new_user
         except IntegrityError as exc:
