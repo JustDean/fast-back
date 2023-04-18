@@ -4,12 +4,11 @@ from starlette.testclient import TestClient
 from app.user.accessors import user_accessor
 from app.user.models import User
 
-
+@pytest.mark.asyncio
 class TestUserSignup:
     ENDPOINT = "user/signup"
 
-    @pytest.mark.asyncio
-    async def test_success(self, client: TestClient, session, user: User) -> None:
+    async def test_success(self, client: TestClient, session) -> None:
         username = "TestUser"
         password = "aboba"
         payload = {"name": username, "password": password}

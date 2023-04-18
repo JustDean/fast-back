@@ -6,7 +6,7 @@ import alembic.config
 from os import environ, system
 
 # it is required for uvicorn to run this app
-from web.settings import app  # noqa
+from web.app import app  # noqa
 
 
 cli = typer.Typer()
