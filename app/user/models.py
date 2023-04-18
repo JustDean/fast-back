@@ -25,8 +25,4 @@ class User(Base):
         return self.password == hasher.hexdigest()
 
     def to_dict(self) -> dict:
-        return {
-            "id": self.id,
-            "name": self.name,
-            "password": self.password
-        }
+        return {"id": self.id, "name": self.name, "password": self.password}

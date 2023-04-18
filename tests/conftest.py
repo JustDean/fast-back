@@ -53,7 +53,7 @@ async def session(db_engine: AsyncEngine) -> AsyncGenerator:
 @pytest_asyncio.fixture(autouse=True, scope="function")
 async def clear_db(session: AsyncGenerator) -> None:
     yield
-    await session.rollback()    # rollback all ongoing actions
+    await session.rollback()  # rollback all ongoing actions
     for table in reversed(Base.metadata.sorted_tables):
         await session.execute(table.delete())
     await session.commit()

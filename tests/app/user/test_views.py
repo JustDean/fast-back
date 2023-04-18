@@ -2,7 +2,7 @@ import pytest
 from starlette.testclient import TestClient
 
 from app.user.accessors import user_accessor
-from app.user.models import User
+
 
 @pytest.mark.asyncio
 class TestUserSignup:
