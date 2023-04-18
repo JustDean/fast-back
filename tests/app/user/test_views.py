@@ -3,13 +3,7 @@ import pytest
 from starlette.testclient import TestClient
 
 from app.user.accessors import user_accessor
-from app.user.models import User
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.user.models import User
-from web.app import app
-from web.postgres import engine, Base
 
 @pytest.mark.asyncio
 class TestUserSignup:

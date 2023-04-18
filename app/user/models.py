@@ -1,7 +1,7 @@
 from typing import Any
 
 import hashlib
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import String
 from sqlalchemy.orm import mapped_column, Mapped
 
 from web.postgres import BaseModel
