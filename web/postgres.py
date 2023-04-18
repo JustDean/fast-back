@@ -1,6 +1,6 @@
 import logging
 import os
-from typing import AsyncGenerator
+from typing import Any, AsyncGenerator
 
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
@@ -33,3 +33,9 @@ async def get_session() -> AsyncGenerator:
     )
     async with async_session() as session:
         yield session
+
+class BaseModel(Base):
+    __abstract__ = True
+
+    def to_dict(self) -> dict[str, Any]:
+        return NotImplementedError

@@ -2,16 +2,22 @@ from typing import Any
 
 import hashlib
 from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import mapped_column, Mapped
 
-from web.postgres import Base
+from web.postgres import BaseModel
 
 
-class User(Base):
+__all__ = [
+    "User",
+]
+
+
+class User(BaseModel):
     __tablename__ = "user"
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String(64), unique=True)
-    password = Column(String(64))
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(String(64), unique=True)
+    password: Mapped[str] = mapped_column(String(64))
 
     def __init__(__pydantic_self__, **data: Any) -> None:
         hasher = hashlib.sha256()

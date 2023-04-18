@@ -16,7 +16,6 @@ from web.postgres import get_session
 router = APIRouter(
     prefix="/user",
     tags=["user"],
-    # responses={404: {"description": "Not found"}},
 )
 
 
@@ -52,7 +51,7 @@ async def login(
     user_session = await session_accessor.create(db_session, user)
     response.set_cookie("sessionid", user_session.id)
 
-    return user
+    return user.to_dict()
 
 
 @router.post("/logout")
@@ -75,11 +74,8 @@ async def current(
     db_session: AsyncSession = Depends(get_session),
     sessionid: str | None = Cookie(None),
 ) -> User:
-    if not sessionid:
+    the_user = await user_accessor.get_by_cookie(db_session, sessionid)
+    if not the_user:
         raise HTTPException(status_code=401, detail="Unauthorized")
 
-    user_session = await session_accessor.get(db_session, sessionid)
-    if not user_session:
-        raise HTTPException(status_code=401, detail="Unauthorized")
-
-    return await user_accessor.get_by_id(db_session, user_session.user)
+    return the_user.to_dict()

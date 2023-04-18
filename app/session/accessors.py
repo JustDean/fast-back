@@ -23,7 +23,7 @@ class SessionAccessor:
         res = await db_session.execute(
             select(Session).where(Session.id == session_id)
         )
-        return res.scalar()  # type: ignore
+        return res.scalar()
 
     async def delete(self, db_session: AsyncSession, session_id: str) -> str:
         results = await db_session.execute(
