@@ -1,7 +1,8 @@
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.exc import IntegrityError
 from uuid import uuid4
 from sqlalchemy import select
+from sqlalchemy.orm.exc import UnmappedInstanceError
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.session.models import Session
 from app.user.models import User
@@ -25,15 +26,20 @@ class SessionAccessor:
         )
         return res.scalar()  # type: ignore
 
-    async def delete(self, db_session: AsyncSession, session_id: str) -> str:
-        results = await db_session.execute(
-            select(Session).where(Session.id == session_id)
-        )
-        the_session = results.scalar()
-        await db_session.delete(the_session)
-        await db_session.commit()
+    async def delete(
+        self, db_session: AsyncSession, session_id: str
+    ) -> str | None:
+        try:
+            results = await db_session.execute(
+                select(Session).where(Session.id == session_id)
+            )
+            the_session = results.scalar()
+            await db_session.delete(the_session)
+            await db_session.commit()
 
-        return session_id
+            return session_id
+        except UnmappedInstanceError:
+            return None
 
 
 session_accessor = SessionAccessor()

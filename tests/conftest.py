@@ -1,10 +1,9 @@
-from typing import AsyncGenerator
-
 import os
-import pytest
+import asyncio
 import pytest_asyncio
+import pytest
+from httpx import AsyncClient
 from distutils.util import strtobool
-from starlette.testclient import TestClient
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     AsyncEngine,
@@ -18,16 +17,22 @@ from web.postgres import DATABASE_URL, Base
 from .fixtures import *  # noqa
 
 
-test_client = TestClient(app)
-
-
-@pytest.fixture
-def client() -> TestClient:
-    return test_client
+@pytest.yield_fixture(scope="session")
+def event_loop(request):
+    """Create an instance of the default event loop for each test case."""
+    loop = asyncio.get_event_loop_policy().new_event_loop()
+    yield loop
+    loop.close()
 
 
 @pytest_asyncio.fixture()
-async def db_engine() -> AsyncEngine:
+async def client() -> AsyncClient:
+    async with AsyncClient(app=app, base_url="http://testserver") as client:
+        yield client
+
+
+@pytest_asyncio.fixture()
+async def db_engine() -> AsyncEngine:  # type: ignore
     yield create_async_engine(DATABASE_URL, echo=True)
 
 
@@ -42,7 +47,7 @@ async def db(db_engine: AsyncEngine) -> None:
 
 
 @pytest_asyncio.fixture
-async def session(db_engine: AsyncEngine) -> AsyncGenerator:
+async def session(db_engine: AsyncEngine) -> AsyncSession:
     async_session = sessionmaker(
         db_engine, class_=AsyncSession, expire_on_commit=False
     )
@@ -51,7 +56,7 @@ async def session(db_engine: AsyncEngine) -> AsyncGenerator:
 
 
 @pytest_asyncio.fixture(autouse=True, scope="function")
-async def clear_db(session: AsyncGenerator) -> None:
+async def clear_db(session: AsyncSession) -> None:
     yield
     await session.rollback()  # rollback all ongoing actions
     for table in reversed(Base.metadata.sorted_tables):

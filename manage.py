@@ -16,7 +16,7 @@ cli = typer.Typer()
 def runserver() -> None:
     port = int(environ.get("PORT", 8080))
     log_level = environ.get("LOG_LEVEL", "debug")
-    uvicorn.run("main:app", port=port, log_level=log_level)
+    uvicorn.run("manage:app", port=port, log_level=log_level)
 
 
 @cli.command()

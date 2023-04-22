@@ -1,5 +1,5 @@
 from app.user.models import User
 
 
-def serialize_user(user: User) -> dict:
+def user_to_dict(user: User) -> dict:
     return {"id": user.id, "name": user.name}

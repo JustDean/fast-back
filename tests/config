@@ -1,4 +1,4 @@
-REUSE_DB=false
+REUSE_DB=true
 
 DATABASE_USER=fast_back_user
 DATABASE_PASSWORD=fast_back_password

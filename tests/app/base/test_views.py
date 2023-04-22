@@ -1,10 +1,12 @@
-from starlette.testclient import TestClient
+import pytest
+from httpx import AsyncClient
 
 
 class TestPing:
     ENDPOINT = "/ping"
 
-    def test_success(self, client: TestClient) -> None:
-        resp = client.get(self.ENDPOINT)
+    @pytest.mark.asyncio
+    async def test_success(self, client: AsyncClient) -> None:
+        resp = await client.get(self.ENDPOINT)
         assert resp.status_code == 200
         assert resp.json() == {"ping": "pong"}
