@@ -9,11 +9,11 @@ from sqlalchemy.orm import declarative_base
 logger = logging.getLogger("uvicorn.error")
 
 
-DATABASE_HOST = os.environ.get("DATABASE_HOST", "127.0.0.1")
-DATABASE_PORT = os.environ.get("DATABASE_PORT", 5432)
-DATABASE_USER = os.environ.get("DATABASE_USER", "postgres")
-DATABASE_PASSWORD = os.environ.get("DATABASE_PASSWORD", "postgres")
-DATABASE_TABLE = os.environ.get("DATABASE_TABLE", "test")
+DATABASE_HOST = os.getenv("DATABASE_HOST", "127.0.0.1")
+DATABASE_PORT = os.getenv("DATABASE_PORT", 5432)
+DATABASE_USER = os.getenv("DATABASE_USER", "postgres")
+DATABASE_PASSWORD = os.getenv("DATABASE_PASSWORD", "postgres")
+DATABASE_TABLE = os.getenv("DATABASE_TABLE", "test")
 
 DATABASE_URL = (
     f"postgresql+asyncpg://{DATABASE_USER}"
