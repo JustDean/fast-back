@@ -1,19 +1,19 @@
 import logging
-import os
-
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import declarative_base
 
+from web.settings import (
+    DATABASE_HOST,
+    DATABASE_PORT,
+    DATABASE_USER,
+    DATABASE_PASSWORD,
+    DATABASE_TABLE,
+)
+
 
 logger = logging.getLogger("uvicorn.error")
 
-
-DATABASE_HOST = os.getenv("DATABASE_HOST", "127.0.0.1")
-DATABASE_PORT = os.getenv("DATABASE_PORT", 5432)
-DATABASE_USER = os.getenv("DATABASE_USER", "postgres")
-DATABASE_PASSWORD = os.getenv("DATABASE_PASSWORD", "postgres")
-DATABASE_TABLE = os.getenv("DATABASE_TABLE", "test")
 
 DATABASE_URL = (
     f"postgresql+asyncpg://{DATABASE_USER}"
@@ -21,9 +21,7 @@ DATABASE_URL = (
     f":{DATABASE_PORT}/{DATABASE_TABLE}"
 )
 
-
 engine = create_async_engine(DATABASE_URL, echo=True)
-Base = declarative_base()
 
 
 async def get_session() -> AsyncSession:  # type: ignore
@@ -32,6 +30,9 @@ async def get_session() -> AsyncSession:  # type: ignore
     )
     async with async_session() as session:
         yield session
+
+
+Base = declarative_base()
 
 
 class BaseModel(Base):

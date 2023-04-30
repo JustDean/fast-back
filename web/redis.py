@@ -1,19 +1,16 @@
-import functools
 from typing import Any, Callable
 
 import logging
 import os
 import pickle
 import aioredis
+import functools
+
+from web.settings import REDIS_HOST, REDIS_DATABASE_INDEX
 
 
 logger = logging.getLogger("uvicorn.error")
 
-
-REDIS_HOST = os.getenv("REDIS_HOST", "127.0.0.1")
-REDIS_DATABASE_INDEX = os.getenv("REDIS_DATABASE_INDEX", 7)
-REDIS_USERNAME = os.getenv("REDIS_USERNAME", "user")
-REDIS_PASSWORD = os.getenv("REDIS_PASSWORD", "password")
 
 REDIS_URL = f"redis://{REDIS_HOST}/{REDIS_DATABASE_INDEX}"
 

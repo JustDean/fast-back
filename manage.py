@@ -4,9 +4,9 @@ import os
 import uvicorn
 import typer
 import alembic.config
-from distutils.util import strtobool
 
 # it is required for uvicorn to run this app
+from web.settings import DEBUG, PORT
 from web.app import app  # noqa
 
 
@@ -15,10 +15,8 @@ cli = typer.Typer()
 
 @cli.command()
 def runserver() -> None:
-    port = int(os.getenv("PORT", 8080))
-    DEBUG = strtobool(os.getenv("DEBUG", False))
     log_level = "debug" if DEBUG else "info"
-    uvicorn.run("manage:app", port=port, log_level=log_level)
+    uvicorn.run("manage:app", port=PORT, log_level=log_level)
 
 
 @cli.command()
