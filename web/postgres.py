@@ -32,3 +32,14 @@ async def get_session() -> AsyncSession:  # type: ignore
     )
     async with async_session() as session:
         yield session
+
+
+class BaseModel(Base):
+    __abstract__ = True
+
+    def to_dict(self) -> dict:
+        return {
+            k: v
+            for k, v in self.__dict__.items()
+            if not k.startswith(("_", "__"))
+        }

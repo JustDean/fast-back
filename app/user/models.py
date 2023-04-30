@@ -3,10 +3,10 @@ from typing import Any
 import hashlib
 from sqlalchemy import Column, Integer, String
 
-from web.postgres import Base
+from web.postgres import BaseModel
 
 
-class User(Base):
+class User(BaseModel):
     __tablename__ = "user"
 
     id = Column(Integer, primary_key=True)
@@ -23,6 +23,3 @@ class User(Base):
         hasher = hashlib.sha256()
         hasher.update(bytes(password, "utf-8"))
         return self.password == hasher.hexdigest()  # type: ignore
-
-    def to_dict(self) -> dict:
-        return {"id": self.id, "name": self.name, "password": self.password}
