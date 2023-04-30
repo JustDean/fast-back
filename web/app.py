@@ -5,6 +5,7 @@ from sentry_sdk.integrations.starlette import StarletteIntegration
 from sentry_sdk.integrations.fastapi import FastApiIntegration
 
 from web.settings import DEBUG, USE_SENTRY, SENTRY_DSN, SENTRY_ENV
+from app.attachment.views import router as attachment_router
 from app.base.views import router as base_router
 from app.user.views import router as user_router
 
@@ -24,6 +25,7 @@ if USE_SENTRY:
 app = FastAPI()
 
 routers = [
+    attachment_router,
     base_router,
     user_router,
 ]

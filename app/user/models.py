@@ -1,7 +1,8 @@
 from typing import Any
 
 import hashlib
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from web.postgres import BaseModel
 
@@ -9,9 +10,12 @@ from web.postgres import BaseModel
 class User(BaseModel):
     __tablename__ = "user"
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String(64), unique=True)
-    password = Column(String(64))
+    name: Mapped[str] = mapped_column(String(64), unique=True)
+    password: Mapped[str] = mapped_column(String(64))
+
+    # attachments: Mapped[list["Attachment"]] = relationship(
+    #     back_populates="owner"
+    # )
 
     def __init__(__pydantic_self__, **data: Any) -> None:
         hasher = hashlib.sha256()

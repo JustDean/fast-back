@@ -2,6 +2,7 @@ import logging
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import Mapped, mapped_column
 
 from web.settings import (
     DATABASE_HOST,
@@ -37,6 +38,8 @@ Base = declarative_base()
 
 class BaseModel(Base):
     __abstract__ = True
+
+    id: Mapped[int] = mapped_column(primary_key=True)
 
     def to_dict(self) -> dict:
         return {
