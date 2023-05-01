@@ -1,6 +1,7 @@
 from secrets import token_hex
 from fastapi import APIRouter, UploadFile, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
+from aiobotocore.session import AioBaseClient
 
 from app.attachment.accessors import attachment_accessor
 from app.attachment.forms import AttachmentForm
@@ -19,10 +20,11 @@ router = APIRouter(
 async def upload(
     file: UploadFile,
     db_session: AsyncSession = Depends(get_session),
+    s3_client: AioBaseClient = Depends(s3_accessor.get_s3_client),
 ) -> dict:
     file_data = await file.read()
     filename = f"{token_hex(6)}{file.filename}"
-    await s3_accessor.upload(file_data, filename)
+    await s3_accessor.upload(s3_client, file_data, filename)
     file_url = s3_accessor.get_file_url(filename)
     attachment = await attachment_accessor.create(
         db_session, filename, file_url

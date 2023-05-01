@@ -1,10 +1,6 @@
-import uuid
-from secrets import token_hex
-from aiobotocore.session import get_session
-from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import UploadFile
+from aiobotocore.session import get_session, AioBaseClient
+from app.attachment.exceptions import raise_s3_exception
 
-from app.attachment.models import Attachment
 from web.settings import (
     MINIO_HOST,
     MINIO_SERVICE_NAME,
@@ -20,39 +16,37 @@ class S3Accessor:
     def __init__(self) -> None:
         self.session = get_session()
 
-    # async def _get_session(self):
-    #     async with self.session.create_client(
-    #         service_name=MINIO_HOST,
-    #         endpoint_url=MINIO_SERVICE_NAME,
-    #         aws_access_key_id=MINIO_ACCESS_KEY,
-    #         aws_secret_access_key=MINIO_SECRET_KEY,
-    #     ) as s3_session:
-    #         yield s3_session
-
     def get_file_url(self, filename: str) -> str:
         return f"{self.BASE_URL}/{filename}"
 
-    async def upload(self, file: bytes, filename: str) -> Attachment:
+    async def get_s3_client(self) -> AioBaseClient:
         async with self.session.create_client(
             service_name=MINIO_SERVICE_NAME,
             endpoint_url=MINIO_HOST,
             aws_access_key_id=MINIO_ACCESS_KEY,
             aws_secret_access_key=MINIO_SECRET_KEY,
         ) as s3_client:
+            yield s3_client
+
+    async def upload(
+        self, s3_client: AioBaseClient, file: bytes, filename: str
+    ) -> dict:
+        try:
             return await s3_client.put_object(
                 Bucket=MINIO_BUCKET_NAME, Key=filename, Body=file
             )
+        except Exception as exc:
+            raise raise_s3_exception(str(exc))
 
-    async def get_object_info(self, filename: str) -> dict:
-        async with self.session.create_client(
-            service_name=MINIO_SERVICE_NAME,
-            endpoint_url=MINIO_HOST,
-            aws_access_key_id=MINIO_ACCESS_KEY,
-            aws_secret_access_key=MINIO_SECRET_KEY,
-        ) as s3_client:
+    async def get_object_info(
+        self, s3_client: AioBaseClient, filename: str
+    ) -> dict:
+        try:
             return await s3_client.get_object_acl(
                 Bucket=MINIO_BUCKET_NAME, Key=filename
             )
+        except Exception as exc:
+            raise raise_s3_exception(str(exc))
 
 
 s3_accessor = S3Accessor()
